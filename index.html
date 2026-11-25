@@ -1,514 +1,1283 @@
-<script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],<!DOCTYPE html>
-<html lang="pt-BR" class="dark">
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nycolly Silva Santos | Mecânica & IA Generativa</title>
-    <!-- Carregando Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Fonte Inter e JetBrains Mono para detalhes técnicos -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-    <!-- Ícones Lucide -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    colors: {
-                        graphite: {
-                            950: '#090a0f',
-                            900: '#11131a',
-                            800: '#1a1d26',
-                            700: '#272b38',
-                        },
-                        neon: {
-                            cyan: '#06b6d4',
-                            purple: '#a855f7',
-                        }
-                    },
-                    animation: {
-                        'spin-slow': 'spin 25s linear infinite',
-                        'spin-reverse-slow': 'spin-reverse 30s linear infinite',
-                        'pulse-glow': 'pulse-glow 4s ease-in-out infinite',
-                    },
-                    keyframes: {
-                        'spin-reverse': {
-                            from: { transform: 'rotate(360deg)' },
-                            to: { transform: 'rotate(0deg)' },
-                        },
-                        'pulse-glow': {
-                            '0%, 100%': { opacity: 0.4 },
-                            '50%': { opacity: 0.8 },
-                        }
-                    }
-                }
+    <title>Nycolly Silva Santos | Mecânica, IA & Dados</title>
+    <style>
+        /* ==========================================================================
+           1. VARIÁVEIS DE TEMA & DESIGN TOKENS (100% AUTOCONTIDO)
+           ========================================================================== */
+        :root {
+            --bg-primary: #07090e;
+            --bg-secondary: #0e121b;
+            --bg-card: rgba(16, 21, 32, 0.78);
+            --bg-card-hover: rgba(22, 29, 44, 0.92);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
+
+            /* Tema Padrão: Modo IA (Ciano & Roxo) */
+            --accent-primary: #06b6d4;
+            --accent-secondary: #a855f7;
+            --accent-glow: rgba(6, 182, 212, 0.25);
+            --accent-soft: rgba(6, 182, 212, 0.12);
+            --grid-color: rgba(6, 182, 212, 0.045);
+
+            --gear-speed: 28s;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+        }
+
+        /* Tema 2: Modo Mecânica (Âmbar Industrial & Aço) */
+        [data-theme="mecanica"] {
+            --accent-primary: #f59e0b;
+            --accent-secondary: #ef4444;
+            --accent-glow: rgba(245, 158, 11, 0.25);
+            --accent-soft: rgba(245, 158, 11, 0.12);
+            --grid-color: rgba(245, 158, 11, 0.045);
+        }
+
+        /* Tema 3: Modo Dados / Excel (Verde Esmeralda Matrix) */
+        [data-theme="excel"] {
+            --accent-primary: #10b981;
+            --accent-secondary: #34d399;
+            --accent-glow: rgba(16, 185, 129, 0.25);
+            --accent-soft: rgba(16, 185, 129, 0.12);
+            --grid-color: rgba(16, 185, 129, 0.045);
+        }
+
+        /* ==========================================================================
+           2. RESET & BASE LAYOUT
+           ========================================================================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* Grade Blueprint Técnica no Fundo */
+        .blueprint-bg {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
+            background-size: 36px 36px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Engrenagens SVG Animadas de Fundo */
+        .gear-bg {
+            position: fixed;
+            color: var(--border-subtle);
+            pointer-events: none;
+            z-index: 0;
+            transition: color 0.4s ease;
+        }
+
+        .gear-top-right {
+            top: -110px;
+            right: -110px;
+            width: 340px;
+            height: 340px;
+            animation: spin var(--gear-speed) linear infinite;
+        }
+
+        .gear-bottom-left {
+            bottom: -140px;
+            left: -120px;
+            width: 400px;
+            height: 400px;
+            animation: spin-reverse calc(var(--gear-speed) * 1.3) linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes spin-reverse {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
+        }
+
+        /* ==========================================================================
+           3. BARRA SUPERIOR DE TELEMETRIA & TEMAS
+           ========================================================================== */
+        .top-bar {
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            background: rgba(7, 9, 14, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 0.75rem 1rem;
+        }
+
+        .top-bar-inner {
+            max-width: 960px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+        }
+
+        .telemetry-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: var(--bg-secondary);
+            padding: 0.35rem 0.75rem;
+            border-radius: 999px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-primary);
+            box-shadow: 0 0 8px var(--accent-primary);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.85); }
+        }
+
+        .controls-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .theme-btn, .rpm-btn {
+            background: var(--bg-secondary);
+            color: var(--text-muted);
+            border: 1px solid var(--border-subtle);
+            padding: 0.35rem 0.75rem;
+            border-radius: 0.6rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: all 0.25s ease;
+        }
+
+        .theme-btn:hover, .rpm-btn:hover {
+            color: var(--text-main);
+            border-color: var(--accent-primary);
+        }
+
+        .theme-btn.active {
+            background: var(--accent-soft);
+            color: var(--accent-primary);
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        .rpm-btn.turbo-active {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: #07090e;
+            border-color: transparent;
+            font-weight: 700;
+        }
+
+        /* ==========================================================================
+           4. CONTAINER PRINCIPAL & HERO CARD
+           ========================================================================== */
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 2rem 1rem 3rem;
+        }
+
+        .hero-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-subtle);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary), var(--accent-primary));
+        }
+
+        .hero-grid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .hero-grid {
+                flex-direction: row;
+                text-align: left;
+                align-items: flex-start;
+                gap: 2rem;
             }
         }
-    </script>
+
+        .avatar-box {
+            width: 112px;
+            height: 112px;
+            border-radius: 1.25rem;
+            background: linear-gradient(145deg, #131926, #0b0e16);
+            border: 1px solid var(--accent-primary);
+            box-shadow: 0 0 25px var(--accent-glow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .avatar-box:hover {
+            transform: translateY(-3px) scale(1.02);
+        }
+
+        .avatar-initials {
+            font-family: var(--font-mono);
+            font-size: 2.25rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .avatar-tag {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 0.12em;
+            margin-top: 0.25rem;
+        }
+
+        .hero-info {
+            flex: 1;
+        }
+
+        .meta-pills {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        @media (min-width: 768px) {
+            .meta-pills {
+                justify-content: flex-start;
+            }
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+        }
+
+        .pill.highlight {
+            color: var(--accent-primary);
+            border-color: var(--accent-primary);
+            background: var(--accent-soft);
+        }
+
+        .hero-name {
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+            margin-bottom: 0.35rem;
+        }
+
+        .typewriter-line {
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            color: var(--accent-primary);
+            min-height: 1.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 1em;
+            background: var(--accent-secondary);
+            vertical-align: middle;
+            margin-left: 2px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        @media (min-width: 768px) {
+            .hero-actions {
+                justify-content: flex-start;
+            }
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.65rem 1.25rem;
+            border-radius: 0.75rem;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: #07090e;
+            font-weight: 700;
+            font-size: 0.875rem;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 8px 20px var(--accent-glow);
+            transition: transform 0.2s ease, filter 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.65rem 1.1rem;
+            border-radius: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.875rem;
+            border: 1px solid var(--border-subtle);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--accent-primary);
+        }
+
+        /* ==========================================================================
+           5. NAVEGAÇÃO POR ABAS
+           ========================================================================== */
+        .tabs-wrapper {
+            margin: 2rem 0 1.5rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        @media (min-width: 640px) {
+            .tabs-wrapper {
+                justify-content: flex-start;
+            }
+        }
+
+        .tabs-bar {
+            display: inline-flex;
+            background: var(--bg-secondary);
+            padding: 0.35rem;
+            border-radius: 1rem;
+            border: 1px solid var(--border-subtle);
+            gap: 0.25rem;
+            width: 100%;
+            max-width: 520px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            padding: 0.65rem 0.9rem;
+            border-radius: 0.75rem;
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+        }
+
+        .tab-btn.active {
+            background: var(--bg-card-hover);
+            color: var(--accent-primary);
+            border-color: var(--border-subtle);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .tab-panel {
+            display: none;
+            animation: fadeIn 0.35s ease;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ==========================================================================
+           6. CARDS DE FORMAÇÃO & SKILLS (INCLUINDO EXCEL)
+           ========================================================================== */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .filter-chip {
+            padding: 0.35rem 0.85rem;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            background: var(--bg-secondary);
+            color: var(--text-muted);
+            border: 1px solid var(--border-subtle);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-chip.active, .filter-chip:hover {
+            background: var(--accent-soft);
+            color: var(--accent-primary);
+            border-color: var(--accent-primary);
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 1rem;
+        }
+
+        @media (min-width: 640px) {
+            .skills-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .skill-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 1.25rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+
+        .skill-card:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent-primary);
+            transform: translateY(-3px);
+        }
+
+        .skill-card.hidden-card {
+            display: none;
+        }
+
+        .skill-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .skill-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 0.85rem;
+            background: var(--accent-soft);
+            border: 1px solid var(--accent-primary);
+            color: var(--accent-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .status-badge {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            padding: 0.25rem 0.65rem;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+
+        .status-done {
+            background: rgba(16, 185, 129, 0.14);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-progress {
+            background: rgba(245, 158, 11, 0.14);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .skill-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.45rem;
+        }
+
+        .skill-desc {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
+        }
+
+        .skill-footer {
+            padding-top: 0.85rem;
+            border-top: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text-dim);
+        }
+
+        /* Mini Widget: Calculadora Técnica de Redução (Mecânica + Excel Logic) */
+        .calc-widget {
+            margin-top: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 1.25rem;
+            padding: 1.5rem;
+        }
+
+        .calc-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .calc-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .calc-inputs {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 0.85rem;
+        }
+
+        @media (min-width: 640px) {
+            .calc-inputs {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .input-group label {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-bottom: 0.35rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            color: #fff;
+            padding: 0.55rem 0.75rem;
+            border-radius: 0.65rem;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--accent-primary);
+        }
+
+        .calc-output {
+            background: var(--accent-soft);
+            border: 1px solid var(--accent-primary);
+            border-radius: 0.65rem;
+            padding: 0.55rem 0.75rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .calc-output span {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .calc-output strong {
+            font-family: var(--font-mono);
+            font-size: 1.05rem;
+            color: var(--accent-primary);
+        }
+
+        /* ==========================================================================
+           7. ABA SOBRE MIM & MINDSET
+           ========================================================================== */
+        .about-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 1.25rem;
+            padding: 1.75rem;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.75rem;
+        }
+
+        @media (min-width: 768px) {
+            .about-grid {
+                grid-template-columns: 1.3fr 1fr;
+            }
+        }
+
+        .section-heading {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .accent-bar {
+            width: 4px;
+            height: 22px;
+            border-radius: 4px;
+            background: var(--accent-primary);
+        }
+
+        .bio-text {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .bio-text strong {
+            color: #fff;
+        }
+
+        .trait-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        .trait-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-subtle);
+            border-radius: 1rem;
+            padding: 1rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.85rem;
+        }
+
+        .trait-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 0.65rem;
+            background: var(--accent-soft);
+            color: var(--accent-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .trait-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.2rem;
+        }
+
+        .trait-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* ==========================================================================
+           8. ABA CONTATO & REDES
+           ========================================================================== */
+        .contact-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 1.25rem;
+            padding: 2rem;
+            text-align: center;
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        .insta-handle-box {
+            margin: 1.25rem auto;
+            padding: 0.85rem 1.25rem;
+            background: var(--bg-secondary);
+            border: 1px dashed var(--accent-primary);
+            border-radius: 0.85rem;
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+            display: inline-block;
+        }
+
+        /* ==========================================================================
+           9. RODAPÉ & TOAST NOTIFICATION
+           ========================================================================== */
+        footer {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 1.5rem 1rem;
+            border-top: 1px solid var(--border-subtle);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 50;
+            background: var(--bg-secondary);
+            border: 1px solid var(--accent-primary);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+            padding: 0.85rem 1.15rem;
+            border-radius: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateY(120px);
+            opacity: 0;
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 0.5rem;
+            background: var(--accent-soft);
+            color: var(--accent-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
 </head>
-<body class="bg-graphite-950 text-slate-200 font-sans antialiased selection:bg-neon-cyan/30 selection:text-neon-cyan min-h-screen relative overflow-x-hidden flex flex-col justify-between">
+<body>
 
-    <!-- Canvas de Partículas Tecnológicas no Fundo -->
-    <canvas id="bg-canvas" class="fixed inset-0 w-full h-full pointer-events-none z-0 opacity-40"></canvas>
+    <!-- Fundo Blueprint & Engrenagens SVG Inline -->
+    <div class="blueprint-bg"></div>
 
-    <!-- Engrenagens Industriais Decorativas no Fundo (SVG Inline) -->
-    <div class="fixed -top-24 -right-24 text-graphite-800/60 pointer-events-none z-0 animate-spin-slow">
-        <svg width="320" height="320" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-            <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z"/>
-        </svg>
-    </div>
+    <svg class="gear-bg gear-top-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+    </svg>
 
-    <div class="fixed -bottom-32 -left-24 text-graphite-800/50 pointer-events-none z-0 animate-spin-reverse-slow">
-        <svg width="380" height="380" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8">
-            <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z"/>
-        </svg>
-    </div>
+    <svg class="gear-bg gear-bottom-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.6">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+    </svg>
 
-    <!-- Container Principal -->
-    <main class="relative z-10 w-full max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
+    <!-- Barra Superior de Telemetria & Alternador de Modos -->
+    <header class="top-bar">
+        <div class="top-bar-inner">
+            <div class="telemetry-badge">
+                <span class="status-dot"></span>
+                <span id="rpm-readout">SYS: ONLINE // 1.450 RPM</span>
+            </div>
+
+            <div class="controls-group">
+                <button class="theme-btn active" onclick="setTheme('ia', this)" title="Tema Inteligência Artificial">
+                    Modo IA
+                </button>
+                <button class="theme-btn" onclick="setTheme('mecanica', this)" title="Tema Mecânica Industrial">
+                    Modo Mecânica
+                </button>
+                <button class="theme-btn" onclick="setTheme('excel', this)" title="Tema Dados & Excel">
+                    Modo Excel
+                </button>
+                <button class="rpm-btn" id="turbo-btn" onclick="toggleTurbo()">
+                    ⚡ Turbo RPM
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="container">
         
-        <!-- Cartão de Perfil Superior (Hero) -->
-        <header class="bg-graphite-900/80 backdrop-blur-md border border-graphite-700/80 rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden">
-            <!-- Brilho Neon Sutil no Topo -->
-            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-neon-cyan via-neon-purple to-neon-cyan"></div>
-            
-            <div class="flex flex-col md:flex-row items-center md:items-start gap-6 sm:gap-8">
-                <!-- Avatar / Monograma Estilizado -->
-                <div class="relative group shrink-0">
-                    <div class="absolute -inset-1 bg-gradient-to-tr from-neon-cyan to-neon-purple rounded-2xl blur opacity-40 group-hover:opacity-75 transition duration-500"></div>
-                    <div class="relative w-28 h-28 sm:w-32 sm:h-32 bg-graphite-800 border border-graphite-700 rounded-2xl flex flex-col items-center justify-center shadow-inner">
-                        <span class="font-mono text-3xl sm:text-4xl font-bold bg-gradient-to-r from-neon-cyan to-neon-purple bg-clip-text text-transparent">NS</span>
-                        <span class="text-[10px] font-mono text-slate-400 tracking-widest mt-1 uppercase">SYS // 16Y</span>
-                    </div>
+        <!-- Cartão Hero -->
+        <section class="hero-card">
+            <div class="hero-grid">
+                <div class="avatar-box">
+                    <span class="avatar-initials">NS</span>
+                    <span class="avatar-tag">ID // 16Y</span>
                 </div>
 
-                <!-- Informações Principais -->
-                <div class="flex-1 text-center md:text-left">
-                    <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-2">
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono bg-graphite-800 text-neon-cyan border border-neon-cyan/30">
-                            <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> Pompeia, SP
+                <div class="hero-info">
+                    <div class="meta-pills">
+                        <span class="pill highlight">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            Pompeia, SP
                         </span>
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono bg-graphite-800 text-slate-300 border border-graphite-700">
-                            <i data-lucide="user" class="w-3.5 h-3.5 text-neon-purple"></i> 16 anos
-                        </span>
+                        <span class="pill">16 anos</span>
+                        <span class="pill">Low Profile</span>
                     </div>
 
-                    <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-2">
-                        Nycolly Silva Santos
-                    </h1>
+                    <h1 class="hero-name">Nycolly Silva Santos</h1>
 
-                    <!-- Subtítulo com Efeito Typewriter -->
-                    <div class="h-7 flex items-center justify-center md:justify-start mb-5">
-                        <p class="font-mono text-sm sm:text-base text-neon-cyan">
-                            <span class="text-slate-500">&gt; </span>
-                            <span id="typewriter-text"></span>
-                            <span class="animate-pulse text-neon-purple font-bold">_</span>
-                        </p>
+                    <div class="typewriter-line">
+                        <span>&gt; </span><span id="typewriter"></span><span class="cursor"></span>
                     </div>
 
-                    <!-- Botões de Ação / Instagram -->
-                    <div class="flex flex-wrap items-center justify-center md:justify-start gap-3">
-                        <a href="https://instagram.com/nih.rodrigueszx_" target="_blank" rel="noopener noreferrer" 
-                           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-neon-cyan to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-graphite-950 font-semibold text-sm transition-all shadow-lg shadow-neon-cyan/20 active:scale-95">
-                            <i data-lucide="instagram" class="w-4 h-4"></i>
-                            <span>@nih.rodrigueszx_</span>
-                            <i data-lucide="external-link" class="w-3.5 h-3.5 opacity-80"></i>
+                    <div class="hero-actions">
+                        <a href="https://instagram.com/nih.rodrigueszx_" target="_blank" rel="noopener noreferrer" class="btn-primary">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                            @nih.rodrigueszx_
                         </a>
-
-                        <button id="copy-insta-btn" onclick="copyInstagram()" 
-                                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-graphite-800 hover:bg-graphite-700 text-slate-200 border border-graphite-700 hover:border-neon-purple/50 font-medium text-sm transition-all active:scale-95 cursor-pointer">
-                            <i data-lucide="copy" class="w-4 h-4 text-neon-purple"></i>
-                            <span id="copy-btn-text">Copiar @</span>
+                        <button class="btn-secondary" onclick="copyHandle()">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                            <span id="copy-label">Copiar @</span>
                         </button>
                     </div>
                 </div>
             </div>
-        </header>
+        </section>
 
-        <!-- Navegação por Abas Interativas -->
-        <nav class="mt-8 mb-6 flex justify-center sm:justify-start">
-            <div class="inline-flex p-1.5 bg-graphite-900/90 border border-graphite-800 rounded-2xl backdrop-blur-sm w-full sm:w-auto">
-                <button onclick="switchTab('formacao')" id="tab-formacao" 
-                        class="tab-btn flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all bg-graphite-800 text-neon-cyan shadow-sm border border-graphite-700">
-                    <i data-lucide="cpu" class="w-4 h-4"></i>
-                    <span>Formação & Tech</span>
-                </button>
-                <button onclick="switchTab('sobre')" id="tab-sobre" 
-                        class="tab-btn flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 transition-all border border-transparent">
-                    <i data-lucide="shield" class="w-4 h-4"></i>
-                    <span>Sobre Mim</span>
-                </button>
-                <button onclick="switchTab('vibe')" id="tab-vibe" 
-                        class="tab-btn flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 transition-all border border-transparent">
-                    <i data-lucide="sliders" class="w-4 h-4"></i>
-                    <span>Vibe & Estilo</span>
-                </button>
+        <!-- Abas de Navegação -->
+        <nav class="tabs-wrapper">
+            <div class="tabs-bar">
+                <button class="tab-btn active" onclick="openTab('formacao', this)">Formação & Skills</button>
+                <button class="tab-btn" onclick="openTab('sobre', this)">Sobre Mim</button>
+                <button class="tab-btn" onclick="openTab('contato', this)">Contato</button>
             </div>
         </nav>
 
-        <!-- Conteúdo Dinâmico das Abas -->
-        <section id="content-area" class="min-h-[320px]">
+        <!-- PAINEL 1: FORMAÇÃO & SKILLS (Mecânica, Redutores, IA Generativa & Excel) -->
+        <section id="tab-formacao" class="tab-panel active">
             
-            <!-- ABA 1: FORMAÇÃO & CURSOS -->
-            <div id="panel-formacao" class="tab-panel space-y-4 transition-opacity duration-300">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    
-                    <!-- Card 1: Técnico em Mecânica -->
-                    <div class="bg-graphite-900/80 border border-graphite-800 hover:border-neon-cyan/50 rounded-2xl p-6 transition-all group flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="w-11 h-11 rounded-xl bg-neon-cyan/10 border border-neon-cyan/20 flex items-center justify-center text-neon-cyan group-hover:scale-110 transition-transform">
-                                    <i data-lucide="wrench" class="w-5 h-5"></i>
-                                </div>
-                                <span class="px-2.5 py-1 text-[11px] font-mono rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                                    Em andamento
-                                </span>
-                            </div>
-                            <h3 class="text-lg font-bold text-white mb-2">Técnico em Mecânica</h3>
-                            <p class="text-sm text-slate-400 leading-relaxed">
-                                Formação técnica focada em processos industriais, sistemas mecânicos, metrologia e manutenção de equipamentos.
-                            </p>
-                        </div>
-                        <div class="mt-5 pt-4 border-t border-graphite-800/80 flex items-center gap-2 text-xs font-mono text-slate-500">
-                            <i data-lucide="cog" class="w-3.5 h-3.5 text-neon-cyan"></i>
-                            <span>Área Industrial</span>
-                        </div>
-                    </div>
-
-                    <!-- Card 2: IA Generativa -->
-                    <div class="bg-graphite-900/80 border border-graphite-800 hover:border-neon-purple/50 rounded-2xl p-6 transition-all group flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="w-11 h-11 rounded-xl bg-neon-purple/10 border border-neon-purple/20 flex items-center justify-center text-neon-purple group-hover:scale-110 transition-transform">
-                                    <i data-lucide="sparkles" class="w-5 h-5"></i>
-                                </div>
-                                <span class="px-2.5 py-1 text-[11px] font-mono rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                                    Em andamento
-                                </span>
-                            </div>
-                            <h3 class="text-lg font-bold text-white mb-2">IA Generativa</h3>
-                            <p class="text-sm text-slate-400 leading-relaxed">
-                                Explorando o futuro da tecnologia, engenharia de prompts, automação inteligente e criação assistida por Inteligência Artificial.
-                            </p>
-                        </div>
-                        <div class="mt-5 pt-4 border-t border-graphite-800/80 flex items-center gap-2 text-xs font-mono text-slate-500">
-                            <i data-lucide="bot" class="w-3.5 h-3.5 text-neon-purple"></i>
-                            <span>Inovação & Futuro</span>
-                        </div>
-                    </div>
-
-                    <!-- Card 3: Redutores e Motorredutores -->
-                    <div class="bg-graphite-900/80 border border-graphite-800 hover:border-emerald-500/50 rounded-2xl p-6 transition-all group flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
-                                    <i data-lucide="settings" class="w-5 h-5"></i>
-                                </div>
-                                <span class="px-2.5 py-1 text-[11px] font-mono rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                                    Concluído
-                                </span>
-                            </div>
-                            <h3 class="text-lg font-bold text-white mb-2">Manutenção de Redutores</h3>
-                            <p class="text-sm text-slate-400 leading-relaxed">
-                                Especialização prática na desmontagem, análise de falhas, lubrificação e montagem de redutores e motorredutores industriais.
-                            </p>
-                        </div>
-                        <div class="mt-5 pt-4 border-t border-graphite-800/80 flex items-center gap-2 text-xs font-mono text-slate-500">
-                            <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400"></i>
-                            <span>Certificado</span>
-                        </div>
-                    </div>
-
-                </div>
+            <div class="filter-bar">
+                <button class="filter-chip active" onclick="filterSkills('all', this)">Todos (4)</button>
+                <button class="filter-chip" onclick="filterSkills('mecanica', this)">Mecânica Industrial</button>
+                <button class="filter-chip" onclick="filterSkills('tech', this)">IA & Dados (Excel)</button>
             </div>
 
-            <!-- ABA 2: SOBRE MIM -->
-            <div id="panel-sobre" class="tab-panel hidden transition-opacity duration-300">
-                <div class="bg-graphite-900/80 border border-graphite-800 rounded-2xl p-6 sm:p-8">
-                    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
-                        <div class="md:col-span-7 space-y-4">
-                            <h2 class="text-2xl font-bold text-white flex items-center gap-2">
-                                <span class="w-2 h-6 rounded-full bg-neon-cyan inline-block"></span>
-                                Entre Engrenagens e Algoritmos
-                            </h2>
-                            <p class="text-slate-300 leading-relaxed text-sm sm:text-base">
-                                Olá! Sou a <strong class="text-white">Nycolly</strong>, tenho 16 anos e moro em <strong class="text-white">Pompeia, SP</strong>. Desde cedo descobri que gosto de entender como as coisas funcionam por dentro — seja desmontando um motorredutor na oficina ou explorando os limites da Inteligência Artificial Generativa.
-                            </p>
-                            <p class="text-slate-400 leading-relaxed text-sm sm:text-base">
-                                Acredito que o futuro pertence a quem une a precisão da engenharia mecânica com o poder das novas tecnologias. Além dos estudos técnicos, trago comigo a bagagem do <strong class="text-neon-purple">Muay Thai</strong>, esporte que pratiquei e que moldou minha disciplina, foco e controle emocional.
-                            </p>
-                        </div>
-
-                        <!-- Destaques Rápidos -->
-                        <div class="md:col-span-5 space-y-3">
-                            <div class="p-4 rounded-xl bg-graphite-800/70 border border-graphite-700/70 flex items-start gap-3.5">
-                                <div class="p-2 rounded-lg bg-neon-purple/10 text-neon-purple shrink-0 mt-0.5">
-                                    <i data-lucide="flame" class="w-5 h-5"></i>
-                                </div>
-                                <div>
-                                    <h4 class="text-sm font-bold text-white">Mentalidade Muay Thai</h4>
-                                    <p class="text-xs text-slate-400 mt-1">Ex-praticante. Resiliência, respeito, foco absoluto nos objetivos e disciplina diária.</p>
-                                </div>
+            <div class="skills-grid">
+                <!-- Card 1: Técnico em Mecânica -->
+                <article class="skill-card" data-category="mecanica">
+                    <div>
+                        <div class="skill-header">
+                            <div class="skill-icon">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
                             </div>
-
-                            <div class="p-4 rounded-xl bg-graphite-800/70 border border-graphite-700/70 flex items-start gap-3.5">
-                                <div class="p-2 rounded-lg bg-neon-cyan/10 text-neon-cyan shrink-0 mt-0.5">
-                                    <i data-lucide="target" class="w-5 h-5"></i>
-                                </div>
-                                <div>
-                                    <h4 class="text-sm font-bold text-white">Foco em Evolução</h4>
-                                    <p class="text-xs text-slate-400 mt-1">Construindo uma base sólida na indústria e na tecnologia desde os 16 anos.</p>
-                                </div>
-                            </div>
+                            <span class="status-badge status-progress">Cursando</span>
                         </div>
+                        <h2 class="skill-title">Técnico em Mecânica</h2>
+                        <p class="skill-desc">
+                            Formação técnica completa em processos industriais, metrologia, leitura e interpretação de projetos mecânicos e manutenção preventiva.
+                        </p>
+                    </div>
+                    <div class="skill-footer">
+                        <span>// ENGENHARIA & INDÚSTRIA</span>
+                        <span>ATUAL</span>
+                    </div>
+                </article>
+
+                <!-- Card 2: Manutenção de Redutores e Motorredutores -->
+                <article class="skill-card" data-category="mecanica">
+                    <div>
+                        <div class="skill-header">
+                            <div class="skill-icon">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                            </div>
+                            <span class="status-badge status-done">Concluído</span>
+                        </div>
+                        <h2 class="skill-title">Redutores e Motorredutores</h2>
+                        <p class="skill-desc">
+                            Especialização prática em diagnóstico de desgaste, desmontagem técnica, troca de rolamentos/retentores, lubrificação e montagem de precisão.
+                        </p>
+                    </div>
+                    <div class="skill-footer">
+                        <span>// TRANSMISSÃO MECÂNICA</span>
+                        <span>CERTIFICADO</span>
+                    </div>
+                </article>
+
+                <!-- Card 3: IA Generativa -->
+                <article class="skill-card" data-category="tech">
+                    <div>
+                        <div class="skill-header">
+                            <div class="skill-icon">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                            </div>
+                            <span class="status-badge status-progress">Cursando</span>
+                        </div>
+                        <h2 class="skill-title">IA Generativa</h2>
+                        <p class="skill-desc">
+                            Domínio de modelos generativos, engenharia de prompts, automação de tarefas e aplicação de inteligência artificial para produtividade técnica.
+                        </p>
+                    </div>
+                    <div class="skill-footer">
+                        <span>// INTELIGÊNCIA ARTIFICIAL</span>
+                        <span>ATUAL</span>
+                    </div>
+                </article>
+
+                <!-- Card 4: Microsoft Excel (NOVO!) -->
+                <article class="skill-card" data-category="tech">
+                    <div>
+                        <div class="skill-header">
+                            <div class="skill-icon">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="9" x2="9" y2="21"/><line x1="15" y1="9" x2="15" y2="21"/></svg>
+                            </div>
+                            <span class="status-badge status-done">Concluído</span>
+                        </div>
+                        <h2 class="skill-title">Excel & Organização de Dados</h2>
+                        <p class="skill-desc">
+                            Criação de planilhas estruturadas, fórmulas lógicas, controle de indicadores de manutenção, organização de dados e relatórios técnicos.
+                        </p>
+                    </div>
+                    <div class="skill-footer">
+                        <span>// ANÁLISE & PLANILHAS</span>
+                        <span>CERTIFICADO</span>
+                    </div>
+                </article>
+            </div>
+
+            <!-- Mini Simulador Interativo: Cálculo de Redutor (Une Mecânica + Lógica de Planilha) -->
+            <div class="calc-widget">
+                <div class="calc-header">
+                    <div class="calc-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="16" y2="18"/></svg>
+                        Simulador Rápido: Relação de Redução (Motorredutor)
+                    </div>
+                    <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-dim);">Fórmula: RPM Saída = RPM Entrada ÷ i</span>
+                </div>
+                <div class="calc-inputs">
+                    <div class="input-group">
+                        <label for="rpm-in">Rotação do Motor (RPM)</label>
+                        <input type="number" id="rpm-in" value="1750" min="1" oninput="calcReducer()">
+                    </div>
+                    <div class="input-group">
+                        <label for="ratio-in">Fator de Redução (i)</label>
+                        <input type="number" id="ratio-in" value="25" min="1" step="0.5" oninput="calcReducer()">
+                    </div>
+                    <div class="calc-output">
+                        <span>Rotação de Saída Calculada</span>
+                        <strong id="rpm-out">70.00 RPM</strong>
                     </div>
                 </div>
             </div>
+        </section>
 
-            <!-- ABA 3: VIBE & ESTILO -->
-            <div id="panel-vibe" class="tab-panel hidden transition-opacity duration-300">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    
-                    <div class="bg-graphite-900/80 border border-graphite-800 rounded-2xl p-6 flex flex-col justify-between">
-                        <div>
-                            <div class="w-10 h-10 rounded-xl bg-graphite-800 border border-graphite-700 flex items-center justify-center text-neon-cyan mb-4">
-                                <i data-lucide="lock" class="w-5 h-5"></i>
-                            </div>
-                            <h3 class="text-lg font-bold text-white mb-2">Círculo Fechado</h3>
-                            <p class="text-sm text-slate-400 leading-relaxed">
-                                Sou uma pessoa mais reservada e seletiva. Tenho poucos amigos e não faço questão de colecionar contatos superficiais. Prefiro <span class="text-slate-200 font-medium">qualidade acima de quantidade</span>, lealdade e paz de espírito.
-                            </p>
-                        </div>
-                        <div class="mt-4 pt-3 border-t border-graphite-800 text-xs font-mono text-neon-cyan">
-                            // LOW PROFILE & FOCADA
-                        </div>
+        <!-- PAINEL 2: SOBRE MIM & MINDSET -->
+        <section id="tab-sobre" class="tab-panel">
+            <div class="about-card">
+                <div class="about-grid">
+                    <div>
+                        <h2 class="section-heading">
+                            <span class="accent-bar"></span>
+                            Precisão Mecânica & Mente Analítica
+                        </h2>
+                        <p class="bio-text">
+                            Olá! Meu nome é <strong>Nycolly Silva Santos</strong>, tenho 16 anos e moro em <strong>Pompeia, SP</strong>. Tenho perfil técnico e curioso: gosto de entender tanto o funcionamento físico das máquinas quanto a lógica por trás das planilhas e da Inteligência Artificial.
+                        </p>
+                        <p class="bio-text">
+                            Atualmente curso <strong>Técnico em Mecânica</strong> e <strong>IA Generativa</strong>, já tendo concluído formações em <strong>Manutenção de Redutores e Motorredutores</strong> e <strong>Excel</strong>. Além disso, trago a mentalidade do <strong>Muay Thai</strong>, arte marcial que pratiquei e que fortaleceu minha disciplina e foco.
+                        </p>
                     </div>
 
-                    <div class="bg-graphite-900/80 border border-graphite-800 rounded-2xl p-6 flex flex-col justify-between">
-                        <div>
-                            <div class="w-10 h-10 rounded-xl bg-graphite-800 border border-graphite-700 flex items-center justify-center text-neon-purple mb-4">
-                                <i data-lucide="zap" class="w-5 h-5"></i>
+                    <div class="trait-list">
+                        <div class="trait-item">
+                            <div class="trait-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                             </div>
-                            <h3 class="text-lg font-bold text-white mb-2">Essência & Energia</h3>
-                            <ul class="space-y-2.5 text-sm text-slate-300 mt-3">
-                                <li class="flex items-center gap-2.5">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-neon-cyan"></span>
-                                    <span>Menos barulho, mais resultados.</span>
-                                </li>
-                                <li class="flex items-center gap-2.5">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-neon-purple"></span>
-                                    <span>Curiosidade técnica e mente analítica.</span>
-                                </li>
-                                <li class="flex items-center gap-2.5">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-neon-cyan"></span>
-                                    <span>Valorizo quem soma e respeita meu espaço.</span>
-                                </li>
-                            </ul>
+                            <div>
+                                <div class="trait-title">Círculo Fechado ("Poucos e Bons")</div>
+                                <div class="trait-desc">Sou reservada, tenho poucos amigos e não faço questão de quantidade. Priorizo paz, lealdade e foco nos meus objetivos.</div>
+                            </div>
                         </div>
-                        <div class="mt-4 pt-3 border-t border-graphite-800 text-xs font-mono text-neon-purple">
-                            // QUALIDADE > QUANTIDADE
+
+                        <div class="trait-item">
+                            <div class="trait-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                            </div>
+                            <div>
+                                <div class="trait-title">Disciplina de Muay Thai</div>
+                                <div class="trait-desc">Ex-praticante. Resiliência, autocontrole e determinação aplicados nos estudos e na vida pessoal.</div>
+                            </div>
                         </div>
                     </div>
-
                 </div>
             </div>
+        </section>
 
+        <!-- PAINEL 3: CONTATO & REDES -->
+        <section id="tab-contato" class="tab-panel">
+            <div class="contact-card">
+                <h2 class="section-heading" style="justify-content: center;">
+                    <span class="accent-bar"></span>
+                    Conexão Direta
+                </h2>
+                <p class="bio-text" style="max-width: 420px; margin: 0 auto;">
+                    Apesar de ser bem seletiva no dia a dia, você pode acompanhar meu perfil oficial no Instagram por aqui:
+                </p>
+
+                <div class="insta-handle-box">@nih.rodrigueszx_</div>
+
+                <div class="hero-actions" style="justify-content: center; margin-top: 0.5rem;">
+                    <a href="https://instagram.com/nih.rodrigueszx_" target="_blank" rel="noopener noreferrer" class="btn-primary">
+                        Abrir Instagram
+                    </a>
+                    <button class="btn-secondary" onclick="copyHandle()">
+                        Copiar Usuário
+                    </button>
+                </div>
+            </div>
         </section>
 
     </main>
 
-    <!-- Rodapé Minimalista -->
-    <footer class="relative z-10 border-t border-graphite-800/80 bg-graphite-950/80 backdrop-blur-sm py-6 text-center">
-        <p class="text-xs font-mono text-slate-500">
-            © 2026 Nycolly Silva Santos • Pompeia, SP • <span class="text-slate-400">@nih.rodrigueszx_</span>
-        </p>
+    <!-- Rodapé -->
+    <footer>
+        © 2026 Nycolly Silva Santos • Pompeia, SP • Mecânica | IA Generativa | Excel
     </footer>
 
-    <!-- Notificação Toast ao Copiar @ -->
-    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
-        <div class="bg-graphite-800 border border-neon-cyan/50 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3">
-            <div class="w-7 h-7 rounded-lg bg-neon-cyan/20 text-neon-cyan flex items-center justify-center">
-                <i data-lucide="check" class="w-4 h-4"></i>
-            </div>
-            <div>
-                <p class="text-xs font-bold text-white">Copiado para a área de transferência!</p>
-                <p class="text-[11px] font-mono text-neon-cyan">@nih.rodrigueszx_</p>
-            </div>
+    <!-- Notificação Toast -->
+    <div id="toast" class="toast">
+        <div class="toast-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div>
+            <div style="font-size: 0.8rem; font-weight: 700; color: #fff;">Usuário copiado!</div>
+            <div style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-primary);">@nih.rodrigueszx_</div>
         </div>
     </div>
 
-    <!-- Scripts Interativos -->
     <script>
-        // Inicializar ícones Lucide
-        lucide.createIcons();
-
-        // 1. Efeito Typewriter no Subtítulo
+        /* ==========================================================================
+           1. EFEITO TYPEWRITER NO SUBTÍTULO
+           ========================================================================== */
         const phrases = [
-            "Mecânica Industrial • IA Generativa • Muay Thai",
-            "Técnica em Mecânica em formação",
-            "Explorando Inteligência Artificial",
-            "Pompeia, SP • Low Profile"
+            "Técnica em Mecânica • IA Generativa • Excel",
+            "Manutenção de Redutores & Motorredutores",
+            "Pompeia, SP • Disciplina & Foco",
+            "Low Profile • Qualidade > Quantidade"
         ];
-        let phraseIndex = 0;
-        let charIndex = 0;
-        let isDeleting = false;
-        const typewriterEl = document.getElementById('typewriter-text');
+        let pIdx = 0, cIdx = 0, deleting = false;
+        const typeEl = document.getElementById('typewriter');
 
-        function typeEffect() {
-            const currentPhrase = phrases[phraseIndex];
-            
-            if (isDeleting) {
-                typewriterEl.textContent = currentPhrase.substring(0, charIndex - 1);
-                charIndex--;
+        function runTypewriter() {
+            const current = phrases[pIdx];
+            typeEl.textContent = deleting ? current.slice(0, --cIdx) : current.slice(0, ++cIdx);
+
+            let delay = deleting ? 35 : 65;
+            if (!deleting && cIdx === current.length) {
+                delay = 2200;
+                deleting = true;
+            } else if (deleting && cIdx === 0) {
+                deleting = false;
+                pIdx = (pIdx + 1) % phrases.length;
+                delay = 350;
+            }
+            setTimeout(runTypewriter, delay);
+        }
+
+        /* ==========================================================================
+           2. ALTERNADOR DE TEMAS (MODO IA / MECÂNICA / EXCEL) & TURBO RPM
+           ========================================================================== */
+        function setTheme(themeName, btn) {
+            if (themeName === 'ia') {
+                document.documentElement.removeAttribute('data-theme');
             } else {
-                typewriterEl.textContent = currentPhrase.substring(0, charIndex + 1);
-                charIndex++;
+                document.documentElement.setAttribute('data-theme', themeName);
             }
-
-            let typingSpeed = isDeleting ? 35 : 70;
-
-            if (!isDeleting && charIndex === currentPhrase.length) {
-                typingSpeed = 2200; // Pausa no final da frase
-                isDeleting = true;
-            } else if (isDeleting && charIndex === 0) {
-                isDeleting = false;
-                phraseIndex = (phraseIndex + 1) % phrases.length;
-                typingSpeed = 400;
-            }
-
-            setTimeout(typeEffect, typingSpeed);
+            document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
         }
 
-        // 2. Sistema de Abas Interativas
-        function switchTab(tabName) {
-            // Ocultar todos os painéis
-            document.querySelectorAll('.tab-panel').forEach(panel => {
-                panel.classList.add('hidden');
-            });
+        let isTurbo = false;
+        function toggleTurbo() {
+            isTurbo = !isTurbo;
+            const btn = document.getElementById('turbo-btn');
+            const readout = document.getElementById('rpm-readout');
 
-            // Resetar estilo de todos os botões
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('bg-graphite-800', 'text-neon-cyan', 'shadow-sm', 'border-graphite-700', 'font-semibold');
-                btn.classList.add('text-slate-400', 'border-transparent', 'font-medium');
-            });
-
-            // Mostrar painel selecionado
-            const activePanel = document.getElementById(`panel-${tabName}`);
-            if (activePanel) {
-                activePanel.classList.remove('hidden');
-            }
-
-            // Destacar botão ativo
-            const activeBtn = document.getElementById(`tab-${tabName}`);
-            if (activeBtn) {
-                activeBtn.classList.remove('text-slate-400', 'border-transparent', 'font-medium');
-                activeBtn.classList.add('bg-graphite-800', 'text-neon-cyan', 'shadow-sm', 'border-graphite-700', 'font-semibold');
+            if (isTurbo) {
+                document.documentElement.style.setProperty('--gear-speed', '3.5s');
+                btn.classList.add('turbo-active');
+                btn.textContent = '🔥 Turbo ATIVO';
+                readout.textContent = 'SYS: TURBO // 4.800 RPM';
+            } else {
+                document.documentElement.style.setProperty('--gear-speed', '28s');
+                btn.classList.remove('turbo-active');
+                btn.textContent = '⚡ Turbo RPM';
+                readout.textContent = 'SYS: ONLINE // 1.450 RPM';
             }
         }
 
-        // 3. Copiar @ do Instagram com Toast Notification
-        function copyInstagram() {
-            const handle = "@nih.rodrigueszx_";
-            
-            // Uso de textarea temporário + execCommand para compatibilidade total em iframes
-            const tempInput = document.createElement("textarea");
-            tempInput.value = handle;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand("copy");
-            document.body.removeChild(tempInput);
-
-            // Atualizar texto do botão temporariamente
-            const btnText = document.getElementById('copy-btn-text');
-            const originalText = btnText.textContent;
-            btnText.textContent = "Copiado!";
-            setTimeout(() => {
-                btnText.textContent = originalText;
-            }, 2000);
-
-            // Mostrar Toast
-            const toast = document.getElementById('toast');
-            toast.classList.remove('translate-y-20', 'opacity-0');
-            setTimeout(() => {
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 3000);
+        /* ==========================================================================
+           3. NAVEGAÇÃO POR ABAS & FILTRO DE SKILLS
+           ========================================================================== */
+        function openTab(tabId, btn) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            btn.classList.add('active');
         }
 
-        // 4. Animação de Partículas Tecnológicas no Fundo (Canvas Responsivo)
-        const canvas = document.getElementById('bg-canvas');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
+        function filterSkills(category, chip) {
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            initParticles();
-        }
-
-        function initParticles() {
-            particles = [];
-            const numParticles = Math.min(Math.floor((canvas.width * canvas.height) / 18000), 60);
-            for (let i = 0; i < numParticles; i++) {
-                particles.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    vx: (Math.random() - 0.5) * 0.4,
-                    vy: (Math.random() - 0.5) * 0.4,
-                    radius: Math.random() * 1.8 + 0.8,
-                    color: Math.random() > 0.5 ? '#06b6d4' : '#a855f7'
-                });
-            }
-        }
-
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            for (let i = 0; i < particles.length; i++) {
-                const p = particles[i];
-                p.x += p.vx;
-                p.y += p.vy;
-
-                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                ctx.fillStyle = p.color;
-                ctx.fill();
-
-                // Conectar partículas próximas (rede neural / circuitos)
-                for (let j = i + 1; j < particles.length; j++) {
-                    const p2 = particles[j];
-                    const dx = p.x - p2.x;
-                    const dy = p.y - p2.y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-
-                    if (dist < 120) {
-                        ctx.beginPath();
-                        ctx.strokeStyle = `rgba(6, 182, 212, ${0.15 * (1 - dist / 120)})`;
-                        ctx.lineWidth = 0.7;
-                        ctx.moveTo(p.x, p.y);
-                        ctx.lineTo(p2.x, p2.y);
-                        ctx.stroke();
-                    }
+            document.querySelectorAll('.skill-card').forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.classList.remove('hidden-card');
+                } else {
+                    card.classList.add('hidden-card');
                 }
-            }
-            requestAnimationFrame(animateParticles);
+            });
         }
 
-        window.addEventListener('resize', resizeCanvas);
+        /* ==========================================================================
+           4. CALCULADORA RÁPIDA DE REDUTOR
+           ========================================================================== */
+        function calcReducer() {
+            const rpmIn = parseFloat(document.getElementById('rpm-in').value) || 0;
+            const ratio = parseFloat(document.getElementById('ratio-in').value) || 1;
+            const outEl = document.getElementById('rpm-out');
+
+            if (ratio <= 0) {
+                outEl.textContent = "Fator inválido";
+                return;
+            }
+            const result = rpmIn / ratio;
+            outEl.textContent = result.toFixed(2) + " RPM";
+        }
+
+        /* ==========================================================================
+           5. COPIAR @ DO INSTAGRAM COM TOAST
+           ========================================================================== */
+        function copyHandle() {
+            const handle = "@nih.rodrigueszx_";
+            const temp = document.createElement("textarea");
+            temp.value = handle;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand("copy");
+            document.body.removeChild(temp);
+
+            const label = document.getElementById('copy-label');
+            if (label) {
+                label.textContent = "Copiado!";
+                setTimeout(() => label.textContent = "Copiar @", 2000);
+            }
+
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2800);
+        }
+
         window.onload = function() {
-            resizeCanvas();
-            animateParticles();
-            typeEffect();
+            runTypewriter();
+            calcReducer();
         };
     </script>
 </body>
